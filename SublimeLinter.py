@@ -362,17 +362,17 @@ def select_linter(view, ignore_disabled=False):
             disabled = view.settings().get('sublimelinter_disable', [])
 
         if language not in disabled:
-            linter = LINTERS['' + language]
+            linter = LINTERS.get(language)
 
             # If the enabled state is False, it must be checked.
             # Enabled checking has to be deferred to first view use because
             # user settings cannot be loaded during plugin startup.
-            if not linter.enabled:
+            if linter is not None and not linter.enabled:
                 enabled, message = linter.check_enabled(view)
                 print('SublimeLinter: {0} {1} ({2})'.format(language, 'enabled' if enabled else 'disabled', message))
 
                 if not enabled:
-                    del LINTERS['' + language]
+                    del LINTERS[language]
                     linter = None
 
     return linter
@@ -385,7 +385,7 @@ def highlight_notes(view):
     regions = LINTERS['annotations'].built_in_check(view, text, '')
 
     if regions:
-        view.add_regions('lint-annotations', regions, 'sublimelinter.annotations', sublime.DRAW_EMPTY_AS_OVERWRITE)
+        view.add_regions('lint-annotations', regions, 'sublimelinter.annotations', flags=sublime.DRAW_EMPTY_AS_OVERWRITE)
 
 
 def _update_view(view, filename, **kwargs):
@@ -627,15 +627,16 @@ def settings_changed():
 
 def reload_settings(view):
     '''Restores user settings.'''
-    settings = sublime.load_settings(__name__ + '.sublime-settings')
-    settings.clear_on_change(__name__)
-    settings.add_on_change(__name__, settings_changed)
+    settings_name = 'SublimeLinter'
+    settings = sublime.load_settings(settings_name + '.sublime-settings')
+    settings.clear_on_change(settings_name)
+    settings.add_on_change(settings_name, settings_changed)
 
     for setting in ALL_SETTINGS:
-        if settings.get(setting) != None:
+        if settings.get(setting) is not None:
             view.settings().set(setting, settings.get(setting))
 
-    if view.settings().get('sublimelinter') == None:
+    if view.settings().get('sublimelinter') is not None:
         view.settings().set('sublimelinter', True)
 
 
@@ -714,7 +715,7 @@ class BackgroundLinter(sublime_plugin.EventListener):
         if view.is_scratch():
             return
 
-        if view.settings().get('sublimelinter') != True:
+        if view.settings().get('sublimelinter') is not True:
             erase_lint_marks(view)
             return
 
@@ -733,13 +734,13 @@ class BackgroundLinter(sublime_plugin.EventListener):
     def on_load(self, view):
         reload_settings(view)
 
-        if view.is_scratch() or view.settings().get('sublimelinter') == False or view.settings().get('sublimelinter') == 'save-only':
+        if view.is_scratch() or view.settings().get('sublimelinter') is False or view.settings().get('sublimelinter') == 'save-only':
             return
 
         queue_linter(select_linter(view), view, event='on_load')
 
     def on_post_save(self, view):
-        if view.is_scratch() or view.settings().get('sublimelinter') == False:
+        if view.is_scratch() or view.settings().get('sublimelinter') is False:
             return
 
         reload_view_module(view)
@@ -913,7 +914,7 @@ class SublimelinterLintCommand(SublimelinterCommand):
         if enabled:
             view = self.window.active_view()
 
-            if view and view.settings().get('sublimelinter') == True:
+            if view and view.settings().get('sublimelinter') is True:
                 return False
 
         return enabled
@@ -957,7 +958,7 @@ class SublimelinterDisableCommand(SublimelinterCommand):
         if enabled:
             view = self.window.active_view()
 
-            if view and view.settings().get('sublimelinter') == False:
+            if view and view.settings().get('sublimelinter') is False:
                 return False
 
         return enabled
