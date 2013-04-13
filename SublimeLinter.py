@@ -732,13 +732,20 @@ class BackgroundLinter(sublime_plugin.EventListener):
     def on_load(self, view):
         reload_settings(view)
 
-        if view.is_scratch() or view.settings().get('sublimelinter') == False or view.settings().get('sublimelinter') == 'save-only':
+        sublimelinter_setting = view.settings().get('sublimelinter')
+
+        if view.is_scratch() or sublimelinter_setting == False or sublimelinter_setting == 'save-only':
             return
 
         queue_linter(select_linter(view), view, event='on_load')
 
     def on_post_save(self, view):
-        if view.is_scratch() or view.settings().get('sublimelinter') == False:
+        sublimelinter_setting = view.settings().get('sublimelinter')
+
+        if sublimelinter_setting == None:
+            reload_settings(view)
+
+        if view.is_scratch() or sublimelinter_setting == False:
             return
 
         reload_view_module(view)
