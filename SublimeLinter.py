@@ -347,9 +347,9 @@ def select_linter(view, ignore_disabled=False):
     syntaxMap = view.settings().get('sublimelinter_syntax_map', {})
 
     if syntax in syntaxMap:
-        language = syntaxMap[syntax].lower()
+        language = syntaxMap.get(syntax, '').lower()
     elif lc_syntax in syntaxMap:
-        language = syntaxMap[lc_syntax].lower()
+        language = syntaxMap(lc_syntax, '').lower()
     elif lc_syntax in LINTERS:
         language = lc_syntax
 
@@ -360,12 +360,12 @@ def select_linter(view, ignore_disabled=False):
             disabled = view.settings().get('sublimelinter_disable', [])
 
         if language not in disabled:
-            linter = LINTERS['' + language]
+            linter = LINTERS.get(language)
 
             # If the enabled state is False, it must be checked.
             # Enabled checking has to be deferred to first view use because
             # user settings cannot be loaded during plugin startup.
-            if not linter.enabled:
+            if linter is not None and not linter.enabled:
                 enabled, message = linter.check_enabled(view)
                 print 'SublimeLinter: {0} {1} ({2})'.format(language, 'enabled' if enabled else 'disabled', message)
 
