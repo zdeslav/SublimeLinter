@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # python.py - Lint checking for Python - given filename and contents of the code:
 # It provides a list of line numbers to outline and offsets to highlight.
 #

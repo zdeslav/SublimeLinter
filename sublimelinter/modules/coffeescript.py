@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-# coffeescript.py - sublimelint package for checking coffee files
-
 import re
 import os
 
