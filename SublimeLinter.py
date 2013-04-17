@@ -38,7 +38,7 @@ DELAYS = (
 MARKS = {
     'violation': ('', 'dot'),
     'warning': ('', 'dot'),
-    'illegal': ('', 'circle'),
+    'illegal': ('', '../SublimeLinter/warn'),
 }
 
 # All available settings for SublimeLinter;
