@@ -79,6 +79,8 @@ def get_delay(t, view):
     for _t, d in DELAYS:
         if _t <= t:
             delay = d
+        else:
+            break
 
     delay = delay or DELAYS[0][1]
 
