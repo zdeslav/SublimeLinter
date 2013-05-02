@@ -35,6 +35,8 @@ DELAYS = (
     (1600, (1600, 3000)),
 )
 
+# Select one of the predefined gutter markers, the options are:
+# "alpha", "bright", "dark", "hard" and "simple" REFACTOR, Make this an setting
 MARKS = {
     'violation': ('', '../SublimeLinter/gutter_markers/bright-violation'),
     'warning': ('', '../SublimeLinter/gutter_markers/bright-warning'),
