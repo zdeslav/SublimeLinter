@@ -87,6 +87,10 @@
     // If true, lines with errors or warnings will have a gutter mark.
     "sublimelinter_gutter_marks": true,
 
+    // Select one of the predefined gutter markers, the options are:
+    // "alpha", "bright", "light" and "dark"
+    "sublimelinter_gutter_marks_theme": "alpha",
+
     // If true, the find next/previous error commands will wrap.
     "sublimelinter_wrap_find": true,
 
