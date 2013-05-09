@@ -34,12 +34,16 @@ DELAYS = (
     (1600, (1600, 3000)),
 )
 
-# Select one of the predefined gutter markers, the options are:
-# "alpha", "bright", "dark", "hard" and "simple" REFACTOR, Make this an setting
-MARKS = {
-    'violation': ('', '../SublimeLinter/gutter_markers/bright-violation'),
-    'warning': ('', '../SublimeLinter/gutter_markers/bright-warning'),
-    'illegal': ('', '../SublimeLinter/gutter_markers/bright-illegal')
+# Select one of the predefined gutter mark themes, the options are:
+# "alpha", "bright", "dark", "hard" and "simple"
+MARK_THEMES = ('alpha', 'bright', 'dark', 'hard', 'simple')
+# The path to the built-in gutter mark themes
+MARK_THEMES_PATH = os.path.join('..', 'SublimeLinter', 'gutter_mark_themes')
+# The original theme for anyone interested the previous minimalist approach
+ORIGINAL_MARK_THEME = {
+    'violation': 'dot',
+    'warning': 'dot',
+    'illegal': 'circle'
 }
 
 # All available settings for SublimeLinter;
@@ -226,6 +230,8 @@ def add_lint_marks(view, lines, error_underlines, violation_underlines, warning_
 
         gutter_mark_enabled = True if view.settings().get('sublimelinter_gutter_marks', False) else False
 
+        gutter_mark_theme = view.settings().get('sublimelinter_gutter_marks_theme', 'simple')
+
         outlines = {'warning': [], 'violation': [], 'illegal': []}
 
         for line in ERRORS[vid]:
@@ -242,9 +248,20 @@ def add_lint_marks(view, lines, error_underlines, violation_underlines, warning_
                 args = [
                     'lint-outlines-{0}'.format(lint_type),
                     outlines[lint_type],
-                    'sublimelinter.outline.{0}'.format(lint_type),
-                    MARKS[lint_type][gutter_mark_enabled]
+                    'sublimelinter.outline.{0}'.format(lint_type)
                 ]
+
+                gutter_mark_image = ''
+
+                if gutter_mark_enabled:
+                    if gutter_mark_theme == 'original':
+                        gutter_mark_image = ORIGINAL_MARK_THEME[lint_type]
+                    elif gutter_mark_theme in MARK_THEMES:
+                        gutter_mark_image = os.path.join(MARK_THEMES_PATH, gutter_mark_theme + '-' + lint_type)
+                    else:
+                        gutter_mark_image = gutter_mark_theme + '-' + lint_type
+
+                args.append(gutter_mark_image)
 
                 if outline_style == 'none':
                     args.append(sublime.HIDDEN)
